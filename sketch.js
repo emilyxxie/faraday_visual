@@ -15,7 +15,7 @@ function setup() {
   );
   spawnFilings();
   console.log(filings.length);
-  strokeWeight(0.5);
+  strokeWeight(0.8);
   stroke(255, 150);
   halfHeight = height / 2;
   poleN = mouseY + poleDist;
@@ -34,7 +34,7 @@ function draw() {
 function spawnFilings() {
   for (var y = 0; y <= height; y += fDist) {
     for (var x = 0; x <= width; x += fDist) {
-      filings.push(new Filing(x + random(-10, 10), y + random(-10, 10)));
+      filings.push(new Filing(x + Math.random() * fDist, y + Math.random() * fDist));
     }
   }
 }
