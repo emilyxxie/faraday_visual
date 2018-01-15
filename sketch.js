@@ -4,6 +4,7 @@ var filings = [];
 var poleN;
 var poleS;
 var poleDist = 5;
+const MAGNETIC_MOMENT = 1000000;
 
 // distance between each filing
 var fDist = 18;
@@ -14,20 +15,21 @@ function setup() {
     this.windowHeight
   );
   spawnFilings();
-  console.log(filings.length);
   strokeWeight(0.8);
   stroke(255, 150);
   halfHeight = height / 2;
-  poleN = mouseY + poleDist;
-  poleS = mouseY - poleDist;
+  poleN = mouseX - poleDist;
+  poleS = mouseX + poleDist;
 }
 
 function draw() {
   background(0);
   for (var i = 0; i < filings.length; i++) {
     filing = filings[i];
-    filing.update();
+    filing.calculateIntensity();
+    // filing.rotate();
     filing.render();
+    // noLoop();
   }
 }
 
@@ -39,6 +41,15 @@ function spawnFilings() {
   }
 }
 
+function Magnet(center) {
+  this.center = center;
+  // this.south = s;
+  // this.north = n;
+  // this.midpoint = createVector(this.south.x + this.north.x);
+
+  // (this.south + this.north) / 2;
+}
+
 function Filing(x, y) {
   this.x = x;
   this.y = y;
@@ -46,74 +57,99 @@ function Filing(x, y) {
   this.nearS;
   this.facing = Math.random() * 2;
   this.size = random(6, 10);
+  this.intensity = 0;
+  this.theta = 0;
 
   this.render = function() {
+    this.facing = this.theta;
+    var phi = this.theta + Math.atan(0.5 * Math.tan(this.theta));
 
-    var x1 = this.x + Math.cos(Math.PI * this.facing) * this.size;
-    var y1 = this.y + Math.sin(Math.PI * this.facing) * this.size;
-    var x2 = this.x + Math.cos(Math.PI * (this.facing + 1)) * this.size;
-    var y2 = this.y + Math.sin(Math.PI * (this.facing + 1)) * this.size;
-
+    var x1 = this.x + Math.cos(phi) * this.size;
+    var y1 = this.y + Math.sin(phi) * this.size;
+    var x2 = this.x + Math.cos(phi + Math.PI) * this.size;
+    var y2 = this.y + Math.sin(phi + Math.PI) * this.size;
+    stroke(255, 255, 255, this.intensity);
     line(x1, y1, x2, y2);
+    // rotate(this.theta)
+    // line(this.x, this.y, this.x + this.size, this.y);
   }
 
+  this.calculateIntensity = function() {
 
-// Filing.prototype.rotate = function() {
-//   var deltaX, deltaY, theta, pX, bias;
-//   if (this.x < mouseX) {
-//     pX = poleN;
-//     this.nearN = 1;
-//     this.nearS = 0;
-//   } else {
-//     pX = poleS;
-//     this.nearN = 0;
-//     this.nearS = 1;
-//   }
-//   if (this.x < poleN || this.x > poleS) {
-//     deltaX = pX - this.x;
-//     deltaY = mouseY - this.y;
-//     theta = Math.atan(deltaY / deltaX);
-//     if (this.nearS) { theta += Math.PI; }
-//   } else {
-//     bias = Math.abs((this.x - mouseX)/(pX - mouseX));
-//     deltaX = pX - this.x;
-//     deltaY = (mouseY - this.y) * bias;
-//     theta = Math.atan(deltaY / deltaX) + Math.PI;
-//     if (this.nearS) { theta += Math.PI; }
-//   }
-//   this.facing = theta / Math.PI;
-// };
-
-
-  this.update = function() {
-    var deltaX, deltaY, theta, pX, bias;
-    if (this.y < mouseY) {
-      pY = poleS;
-      this.nearN = 0;
-      this.nearS = 1;
-    } else {
-      pY = poleN;
-      this.nearN = 1;
-      this.nearS = 0;
-    }
-    if (this.y > poleN || this.y < poleS) {
-      deltaY = pY - this.y;
-      deltaX = mouseX - this.x;
-      theta = Math.atan(deltaX / deltaY);
-      if (this.nearS) { theta += Math.PI; }
-    } else {
-      bias = Math.abs((this.y - mouseY)/(pX - mouseX));
-      deltaY = pY - this.y;
-      deltaX = (mouseX - this.x) * bias;
-      theta = Math.atan(deltaX / deltaY) + Math.PI;
-      if (this.nearS) { theta += Math.PI; }
-    }
-    this.facing = theta / Math.PI;
-    // console.log(this.facing);
-    // if (frameCount > 10) {
-    //   noLoop();
+    // var deltaX, deltaY, theta, pX, bias;
+    // if (this.x < mouseX) {
+    //   pX = poleN;
+    //   this.nearN = 1;
+    //   this.nearS = 0;
+    // } else {
+    //   pX = poleS;
+    //   this.nearN = 0;
+    //   this.nearS = 1;
     // }
+    // if (this.x < poleN || this.x > poleS) {
+    //   deltaX = pX - this.x;
+    //   deltaY = mouseY - this.y;
+    //   theta = Math.atan(deltaY / deltaX);
+    //   if (this.nearS) { theta += Math.PI; }
+    // } else {
+    //   bias = Math.abs((this.x - mouseX)/(pX - mouseX));
+    //   deltaX = pX - this.x;
+    //   deltaY = (mouseY - this.y) * bias;
+    //   theta = Math.atan(deltaY / deltaX) + Math.PI;
+    //   if (this.nearS) { theta += Math.PI; }
+    // }
+
+    deltaX = (mouseX - this.x);
+    deltaY = (mouseY - this.y);
+    theta = Math.atan(deltaY / deltaX);
+
+    // console.log();
+    console.log('deltaX', deltaX);
+    console.log('deltaY', deltaY);
+
+    var hypoteneuse = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
+    this.theta = theta;
+    this.intensity = (MAGNETIC_MOMENT * Math.sqrt(3 * Math.pow(Math.cos(theta), 2) + 1)) / Math.pow(hypoteneuse, 3);
+    this.intensity = map(this.intensity, 0, 50, 0, 255) * 200;
+    // console.log(this.intensity);
   }
+
+
+  // this.rotate = function() {
+
+  // }
+
+  this.update = function() {}
+
+
+  //   var deltaX, deltaY, theta, pX, bias;
+  //   if (this.y < mouseY) {
+  //     pY = poleS;
+  //     this.nearN = 0;
+  //     this.nearS = 1;
+  //   } else {
+  //     pY = poleN;
+  //     this.nearN = 1;
+  //     this.nearS = 0;
+  //   }
+  //   if (this.y > poleN || this.y < poleS) {
+  //     deltaY = pY - this.y;
+  //     deltaX = mouseX - this.x;
+  //     theta = Math.atan(deltaX / deltaY);
+  //     if (this.nearS) { theta += Math.PI; }
+  //   } else {
+  //     bias = Math.abs((this.y - mouseY)/(pX - mouseX));
+  //     deltaY = pY - this.y;
+  //     deltaX = (mouseX - this.x) * bias;
+  //     theta = Math.atan(deltaX / deltaY) + Math.PI;
+  //     if (this.nearS) { theta += Math.PI; }
+  //   }
+  //   this.facing = theta / Math.PI;
+  //   // console.log(this.facing);
+  //   // if (frameCount > 10) {
+  //   //   noLoop();
+  //   // }
+  // }
 }
 
 
