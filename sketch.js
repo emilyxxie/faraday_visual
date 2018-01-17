@@ -66,11 +66,12 @@ function Filing(x, y) {
     Now that we have theta, we can use it to calculate the rotation of each filing using another equation, which we'll set to phi.
   */
   this.render = function() {
+    var noiseFactor = noise(frameCount / 100);
     var phi = this.theta + Math.atan(0.5 * Math.tan(this.theta));
-    var x1 = this.x + Math.cos(phi) * this.size * noise();
-    var y1 = this.y + Math.sin(phi) * this.size;
-    var x2 = this.x + Math.cos(phi + Math.PI) * this.size;
-    var y2 = this.y + Math.sin(phi + Math.PI) * this.size;
+    var x1 = this.x + Math.cos(phi * noiseFactor) * this.size;
+    var y1 = this.y + Math.sin(phi * noiseFactor) * this.size;
+    var x2 = this.x + Math.cos(phi * Math.PI + noiseFactor) * this.size;
+    var y2 = this.y + Math.sin(phi * Math.PI + noiseFactor) * this.size;
 
     // give the final intensity a floor and ceiling so that no filing is
     // either too bright or too dim/
