@@ -23,7 +23,7 @@ function draw() {
   for (var i = 0; i < filings.length; i++) {
     filing = filings[i];
     filing.calculateIntensity();
-    filing.render();
+    filing.render(i);
   }
 }
 
@@ -35,12 +35,13 @@ function spawnFilings() {
   }
 }
 
-function Filing(x, y) {
+function Filing(x, y, i) {
   this.x = x;
   this.y = y;
   this.size = random(5, 7.5);
   this.intensity = 0;
   this.theta = 0;
+  this.i = i;
   this.strokeWeight = random(0.5, 2.5)
 
   // varying each filing's intensity gives some illusion of texture.
@@ -65,13 +66,13 @@ function Filing(x, y) {
   /*
     Now that we have theta, we can use it to calculate the rotation of each filing using another equation, which we'll set to phi.
   */
-  this.render = function() {
-    var noiseFactor = noise(frameCount / 100);
+  this.render = function(i) {
+    var noiseFactor = noise(i / 300, frameCount / 50);
     var phi = this.theta + Math.atan(0.5 * Math.tan(this.theta));
-    var x1 = this.x + Math.cos(phi * noiseFactor) * this.size;
-    var y1 = this.y + Math.sin(phi * noiseFactor) * this.size;
-    var x2 = this.x + Math.cos(phi * Math.PI + noiseFactor) * this.size;
-    var y2 = this.y + Math.sin(phi * Math.PI + noiseFactor) * this.size;
+    var x1 = this.x + Math.cos(phi + noiseFactor) * this.size;
+    var y1 = this.y + Math.sin(phi + noiseFactor) * this.size;
+    var x2 = this.x + Math.cos(phi + Math.PI) * this.size;
+    var y2 = this.y + Math.sin(phi + Math.PI) * this.size;
 
     // give the final intensity a floor and ceiling so that no filing is
     // either too bright or too dim/
