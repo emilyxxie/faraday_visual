@@ -72,8 +72,8 @@ function Filing(x, y, i) {
     var phi = this.theta + Math.atan(0.5 * Math.tan(this.theta));
     var x1 = this.x + Math.cos(phi + tilt) * this.size;
     var y1 = this.y + Math.sin(phi + tilt) * this.size;
-    var x2 = this.x + Math.cos(phi + Math.PI + tilt * frameCount / 3.5) * this.size;
-    var y2 = this.y + Math.sin(phi + Math.PI + tilt * frameCount / 3.5) * this.size;
+    var x2 = this.x + Math.cos(phi + Math.PI + tilt) * this.size;
+    var y2 = this.y + Math.sin(phi + Math.PI + tilt) * this.size;
 
     // give the final intensity a floor and ceiling so that no filing is
     // either too bright or too dim/
