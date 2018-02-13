@@ -1,5 +1,9 @@
 p5.disableFriendlyErrors = true;
 
+var tilt= 0.5;
+var undulationFactor = 20;
+
+
 const MAGNETIC_MOMENT = 1000000;
 const MAXIMUM_FILING_OPACITY = 90;
 const MINIMUM_FILING_OPACITY = 12;
@@ -68,13 +72,11 @@ function Filing(x, y, i) {
     Now that we have theta, we can use it to calculate the rotation of each filing using another equation, which we'll set to phi.
   */
   this.render = function(i) {
-    var tilt= 0.5;
-    var undulationFactor = 20;
-    var phi = this.theta + Math.atan(0.5 * Math.tan(this.theta));
-    var x1 = this.x + Math.cos(phi + tilt * noise()) * this.size;
-    var y1 = this.y + Math.sin(phi + tilt * frameCount / undulationFactor) * this.size;
-    var x2 = this.x + Math.cos(phi + Math.PI + tilt * frameCount / undulationFactor) * this.size;
-    var y2 = this.y + Math.sin(phi + Math.PI + tilt * frameCount / undulationFactor) * this.size;
+    phi = this.theta + Math.atan(0.5 * Math.tan(this.theta));
+    x1 = this.x + Math.cos(phi + tilt * noise()) * this.size;
+    y1 = this.y + Math.sin(phi + tilt * frameCount / undulationFactor) * this.size;
+    x2 = this.x + Math.cos(phi + Math.PI + tilt * frameCount / undulationFactor) * this.size;
+    y2 = this.y + Math.sin(phi + Math.PI + tilt * frameCount / undulationFactor) * this.size;
 
     // give the final intensity a floor and ceiling so that no filing is
     // either too bright or too dim/
